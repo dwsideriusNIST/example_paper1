@@ -1,0 +1,47 @@
+\section{Grand Canonical Transition-matrix Monte Carlo Method}\label{sec:methodology}
+
+We begin by presenting some important details of the GC-TMMC simulation algorithm that we aim to introduce for application in simulation of adsorption hysteresis.
+TMMC traces back to a method originally introduced by Fitzgerald et al.\cite{Fitzgerald_Canonical_1999,Fitzgerald_Monte_2000}, though we use a modified form of TMMC pioneered by Errington and co-workers; for a full discussion of the method, consult Refs \onlinecite{Errington_Evaluating_2003,Errington_Direct_2003,Shen_Metastability_2004,Shen_Determination_2005,Errington_Direct_2005,Shen_Determination_2006}.
+The main difference between the two variants of TMMC is Errington's incorporation of a biasing function (see below) that improves sampling of unlikely configurations.
+
+The main objective of a GC-TMMC simulation is to calculate the particle number probability distribution, $\Pi \left(N;\mu,V,T\right)$, which is the probability of observing $N$ particles (or atoms or molecules depending on the simulated species) in an ensemble of volume $V$ at fixed temperature $T$ and chemical potential $\mu$.
+he set of configurations with their number of particles equal to $N$ is said to comprise a macrostate within the ensemble, and the macrostate probability or PNPD in the GC ensemble is given by
+%
+\begin{equation}
+  \Pi \left(N;\mu,V,T\right)
+  = \dfrac{\exp\left(\beta \mu N\right) Q\left(N,V,T\right)}
+     {\Xi\left(\mu,V,T\right)}.
+  \label{GC_Pi_def}
+\end{equation}
+%
+$Q\left(N,V,T\right)$ and $\Xi\left(\mu,V,T\right)$ are the canonical and grand canonical partition functions, respectively, $\beta = 1/k_B T$ (in which $k_B$ is Boltzmann's constant\cite{Mohr_CODATA_2012}), and all other terms are as previously defined.
+In a conventional grand canonical Monte Carlo (GCMC) simulation, this distribution can be determined by constructing a histogram.
+In contrast, TMMC utilizes statistics regarding attempted transitions to determine $\Pi \left(N;\mu,V,T\right)$.
+This is done by accumulating information within a collection matrix $\mathbf{C}$ according to
+%
+\begin{eqnarray}
+  C\left( N_o \rightarrow N_n \right) & = & 
+  C\left( N_o \rightarrow N_n \right) + p\sub{acc}\left(o \rightarrow n\right) \nonumber \\
+  C\left( N_o \rightarrow N_o \right) & = & 
+  C\left( N_o \rightarrow N_o \right) + 1 - p\sub{acc}\left(o \rightarrow n\right)
+  \label{update_C}
+\end{eqnarray}
+%
+where the labels $o$ and $n$ identify the old and new configurations for the attempted transition and $p_{acc}$ is the acceptance probability for the attempted transition.
+The collection matrix $\mathbf{C}$ is updated (see eq \ref{update_C}) after each MC trial move, regardless of whether the move is actually accepted.
+In GC-TMMC, one usually restricts the simulation to three types of single-molecule trial moves: translations, insertions, and deletions.
+Thus, the $\mathbf{C}$ matrix is triply banded, i.e., the only possible transitions are $N \rightarrow N + \delta $, where $\delta = -1$, 0, or +1.
+The acceptance probability of a trial move may be written as\cite{Metropolis_Equations_1953,Hastings_Monte_1970}
+%
+\begin{equation}
+  p\sub{acc}\left(o \rightarrow n\right) = \text{min}\left[1,
+    \dfrac{\alpha\left(n \rightarrow o\right) \pi_{n}}
+    {\alpha\left(o \rightarrow n\right) \pi_{o}}
+      \right],
+    \label{metropolis_unbiased}
+\end{equation}
+%
+where $\alpha\left(o \rightarrow n\right)$ is the probability of generating configuration $n$ from configuration $o$ and $\pi_o$ is the probability of configuration $o$.
+We have written the term $p\sub{acc}$ in eq \ref{metropolis_unbiased} as generically as possible so that it can accommodate any type of Monte Carlo move consistent with the chosen ensemble constraints.
+
+Here is a new paragraph in the methods section.
